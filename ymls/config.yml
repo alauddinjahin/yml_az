@@ -1,0 +1,51 @@
+database:
+  host: localhost
+  port: 3306
+  
+  credentials: 
+    username: root
+    password: "" 
+
+  options:
+    ssl: false
+    protocol: tcp
+    connectionTimeout: 10000  
+    pool:
+      max: 10
+      min: 2
+      idle: 30000 # Max idle time in ms
+
+
+queries:
+  active_users: 
+    sql: |
+        SELECT 
+        u.user_id,
+        u.username,
+        u.email,
+        u.last_login
+        FROM users u
+        WHERE u.status = true
+        AND u.deleted = false
+        ORDER BY u.last_login DESC
+
+    timeout: 5000                  # Query timeout in ms
+    dependsOn: database
+
+application:
+  name: "Test application"
+  version: 1.0.0
+  decription: > 
+    This is a test application 
+    with this application you will be able to track your employee including kpis etc
+
+  features:
+    - authentication
+    - authorization
+    - audit-log 
+    - real life tracking 
+    - KPIS and attendences
+
+  
+  
+

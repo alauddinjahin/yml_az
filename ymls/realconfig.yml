@@ -1,0 +1,25 @@
+app:
+  name: react-app 
+  version: v1.0.0
+  port: 3000
+  debug: true
+
+database:
+  name: my-app-db
+  host: localhost
+  port: 3306
+  username: root
+  password: ~ # this is also null
+
+features:
+  user_registration: true 
+  notifications: true 
+  saas: false 
+  custom_domain: false 
+
+logging:
+  level: info
+  file: /var/log/application.log 
+  max_size: 100mb
+  rotate: true 
+  

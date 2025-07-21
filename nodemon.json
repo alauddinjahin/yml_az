@@ -1,0 +1,10 @@
+{
+  "watch": ["ymls/", "index.js"],
+  "ext": "yml,js,yaml",
+  "exec": "node index.js",
+  "ignore": ["ymls/temp/"],
+  "env": {
+    "NODE_ENV": "development"
+  }
+}
+

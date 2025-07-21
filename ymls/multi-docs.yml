@@ -1,0 +1,29 @@
+
+# Document separator: ---
+
+# First document
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  config.yaml: | # This creates a file named 'config.yaml' from kubernetis automatically
+    debug: true
+    port: 8080
+
+# Second document
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: app-deployment
+# spec:
+#   replicas: 3
+#   template:
+#     spec:
+#       containers:
+#       - name: app
+#         image: myapp:latest
+#         ports:
+#         - containerPort: 8080
+
+# End of documents (optional)

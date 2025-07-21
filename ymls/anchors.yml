@@ -1,0 +1,27 @@
+company: &company_info # anchor is set as a alias
+  name: Keya Knit composite
+  address:  |
+    Jorun, Konabari, Gazipur, Dhaka, Bangladesh
+  contact:
+    - mobile: xxxxxxx
+      email: test@gmail.com 
+
+employees:
+  - <<: *company_info # anchor is used as a reference
+    category: software developer
+    developers:
+      - name: jahin
+        role: senior developer
+      - name: jahid
+        role: UI/UX   
+
+  - <<: *company_info
+    category: Accountant
+    accountants:
+      - name: Omar
+        role: senior accountant 
+
+
+
+
+

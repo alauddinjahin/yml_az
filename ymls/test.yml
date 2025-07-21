@@ -1,0 +1,56 @@
+# Real-world example
+application:
+  name: web-app
+  version: "1.2.3"
+  environment: production
+  
+  database:
+    host: db.example.com
+    port: 5432
+    name: myapp_db
+    credentials:
+      username: app_user
+      password: !vault |
+        $ANSIBLE_VAULT;1.1;AES256
+        encrypted_password_here
+
+# !vault
+# YAML tag indicating this is an Ansible Vault-encrypted value.
+# Tells Ansible to decrypt this value at runtime.
+# | (Pipe Symbol)
+# YAML syntax for a literal block scalar, preserving newlines and formatting.
+# $ANSIBLE_VAULT;1.1;AES256
+# Header specifying:
+# ANSIBLE_VAULT: Identifies this as an Ansible Vault payload.
+# 1.1: Vault format version.
+# AES256: Encryption algorithm (AES-256).
+# encrypted_password_here
+# The actual encrypted ciphertext (base64-encoded).
+
+
+# ansible-vault encrypt_string 'my_secret_password' --name 'password'
+# ansible-vault encrypt_string 's3cr3tP@ss' --name 'postgres_password'
+# ansible-playbook deploy.yml --ask-vault-pass
+# # or
+# ansible-playbook deploy.yml --vault-password-file ~/.vault_pass.txt
+
+# Key Notes
+# Not Docker Native: Docker Compose itself doesn’t support Ansible Vault. This would need to be pre-processed by Ansible before passing to Docker.
+# Alternatives for Docker:
+# Use docker secret (Swarm Mode).
+# Environment variables from a secure vault (e.g., HashiCorp Vault).
+# .env files excluded from version control.
+
+  services:
+    - name: api
+      port: 8080
+      replicas: 3
+      resources:
+        memory: 512Mi
+        cpu: 200m
+    - name: worker
+      port: 8081
+      replicas: 2
+      resources:
+        memory: 256Mi
+        cpu: 100m

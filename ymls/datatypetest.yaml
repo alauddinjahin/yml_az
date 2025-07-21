@@ -1,0 +1,51 @@
+# Standard boolean values
+is_active: true
+is_disabled: false
+
+# YAML also accepts these as booleans
+is_enabled: yes
+is_archived: no
+is_public: on
+is_private: off
+
+# Be careful - these are also valid booleans
+truthy: True    # Evaluates to true
+falsy: False    # Evaluates to false
+
+# Different ways to represent null/empty values
+empty_value: null
+also_empty: ~
+blank_value:
+nothing_here: ""
+
+birth_date: 2023-12-25
+meeting_date: 2023-12-25T10:30:00Z 
+local_time: 2023-12-25T10:30:00-05:00
+with_milliseconds: 2023-12-25T10:30:00.123Z
+appointment: 2023-12-25 10:30:00
+
+
+# Nested lists
+matrix:
+  - [1, 2, 3]
+  - [4, 5, 6]
+  - [7, 8, 9]
+
+# Mixed data types
+mixed_list:
+  - "string"
+  - 42
+  - true
+  - null
+  - nested_key: value
+
+
+services:
+  web:
+    image: nginx:alpine
+    ports: 
+      - 80:80
+
+      
+
+

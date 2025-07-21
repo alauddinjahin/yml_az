@@ -1,0 +1,64 @@
+person:
+  name: jahin
+  age: 27+
+  address:
+    - street: 123 Main St
+    - street2: 123 Main St 2
+  city: Bangladesh
+
+  # Multi-line strings - TWO important types:
+  # 1. Literal style (|) - preserves line breaks
+  experiences: |
+    javascript
+    nodejs
+    PHP
+    Laravel
+    React
+    NextJs
+  # Result: "javascript\nnodejs\nPHP\nLaravel\nReact\nNextJs\n"
+
+  # 2. Folded style (>) - joins lines with spaces
+  extras: >
+    DevOps
+    AWS
+    Digital Ocean
+    VPS
+    Windows Server
+    Azure
+
+  # Result: 'DevOps AWS Digital Ocean VPS Windows Server Azure\n'
+
+  hobbies: [
+    'recite quran',
+    'listen quran',
+    'cricket',
+    'travelling'
+  ]
+
+  is_dev: true
+  bio: null 
+
+  company:
+    name: NO Tech 
+    address: #object 
+      street: Dhaka, Bangladesh # address object property
+      city: Dhaka 
+      country: Bangladesh
+
+    contact:  # array
+      - mobile: "+88017628920xx" # object
+      - email: notech@gmail.com  # object 
+
+
+    location: { # Flow style dictionary
+      dhaka: keranigonj,
+      chittagong: Alongkar
+    }
+    
+    employees: 
+      - name: jahin 
+        role: software developer
+      - name: Alice
+        role: accountant
+
+

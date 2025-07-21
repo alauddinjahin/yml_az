@@ -1,0 +1,66 @@
+version: '3.0'
+
+services:
+  web:
+    name: my-react-app
+    image: nginx:latest
+    ports: 
+      - 80:80
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      database
+    
+  database: 
+    name: my_db
+    image: postgres:13
+    environment:
+      POSTGRES_DB: myapp_db
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: ~ # null
+    volumes:
+      - db_data:/var/lib/postgresql/data #volume binding with name and also have a host binding approach
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: your-api-image:latest  # You need to specify an actual image
+    container_name: api
+    ports:
+      - "8080:8080"
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 512M
+    
+    depends_on:
+      database:
+        condition: service_healthy
+
+
+  worker:
+      image: your-worker-image:latest  # You need to specify an actual image
+      container_name: worker
+      ports:
+        - "8081:8081"
+      deploy:
+        replicas: 2
+        resources:
+          limits:
+            cpus: '0.1'
+            memory: 256M
+volumes:
+  db_data
+
+# volumes:  # more specific
+#   db_data:
+#     driver: local
+#     driver_opts:
+#       type: 'tmpfs'  # Example: use RAM disk for better performance
+#       device: 'tmpfs'
