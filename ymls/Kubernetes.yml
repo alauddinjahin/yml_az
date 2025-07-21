@@ -1,63 +1,92 @@
 # Deployment
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: apps/v1 #Stable API version for deployments
+kind: Deployment #Manages Pods with rolling updates
 metadata:
-  name: web-app
-  namespace: production
-  labels:
+  name: web-app #Unique deployment identifier
+  namespace: production #Isolates resources in "production"
+  labels: #Key-value pairs for selection/monitoring
     app: web-app
     version: v1.0.0
+# Replica Management
 spec:
-  replicas: 3
-  selector:
+  replicas: 3 #Maintains 3 identical Pods
+  selector: # Targets Pods with app: web-app label
     matchLabels:
       app: web-app
   template:
     metadata:
       labels:
-        app: web-app
-    spec:
+        app: web-app #Applies labels to created Pods (must match selector)
+    spec:  # Container Specification
       containers:
-      - name: web
-        image: myapp:1.0.0
+      - name: web #Container identifier
+        image: myapp:1.0.0 # Docker image + tag
         ports:
-        - containerPort: 8080
+        - containerPort: 8080 #Exposed application port
+      # Environment Variables
         env:
-        - name: DB_HOST
+        - name: DB_HOST # From ConfigMap (app-config)
           valueFrom:
             configMapKeyRef:
               name: app-config
               key: database.host
-        - name: DB_PASSWORD
+        - name: DB_PASSWORD #From Secret (db-secret)
           valueFrom:
             secretKeyRef:
               name: db-secret
               key: password
         resources:
-          requests:
+          requests: #Guaranteed resources
             memory: 256Mi
             cpu: 100m
-          limits:
-            memory: 512Mi
+          limits:   #Maximum allowed resources
+            memory: 512Mi #*(1 CPU = 1000m, 1Mi = 1024KiB)*
             cpu: 500m
-        livenessProbe:
+
+        # Health Checks
+        livenessProbe: #Restarts unhealthy containers
           httpGet:
             path: /health
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
-        readinessProbe:
+        readinessProbe: #Controls traffic routing
           httpGet:
             path: /ready
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 5
-        volumeMounts:
+        volumeMounts:   #Mounts ConfigMap as files at /app/config
         - name: config-volume
           mountPath: /app/config
-      volumes:
+      volumes:   #Each ConfigMap key becomes a file
       - name: config-volume
         configMap:
           name: app-config
       imagePullSecrets:
-      - name: registry-secret
+      - name: registry-secret  #Authenticates to private Docker registries
+
+
+# Best Practices
+# Versioning: Always tag images explicitly (:1.0.0)
+
+# Security:
+# Use Secrets for credentials
+# Set resource limits
+
+# Reliability:
+# Configure both liveness/readiness probes
+# Multiple replicas for HA
+
+# Maintainability:
+# Labels for monitoring
+# ConfigMaps for environment-specific settings
+
+# This deployment ensures:
+# High availability (3 replicas)
+# Secure credential management
+# Automated healing (probes)
+# Config/secret separation
+
+
+      
