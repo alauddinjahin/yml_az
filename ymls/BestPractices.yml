@@ -1,0 +1,88 @@
+# Use consistent indentation (2 or 4 spaces)
+# Group related items together
+# Use meaningful names
+# Add comments for complex sections
+
+# Good structure
+application:
+  # Application metadata
+  name: web-service
+  version: "1.0.0"
+  description: "Main web application service"
+  
+  # Runtime configuration
+  runtime:
+    port: 8080
+    workers: 4
+    timeout: 30
+    
+  # Database configuration
+  database: &database
+    host: localhost
+    port: 5432
+    name: myapp_db
+    pool_size: 10
+    
+  # External services
+  services:
+    redis:
+      <<: *database
+      port: 6379
+      db: 0
+    
+    elasticsearch:
+      hosts:
+        - es-node-1:9200
+        - es-node-2:9200
+      timeout: 10
+
+
+
+
+# Security Best Practices
+
+# Use secrets management
+database:
+  host: db.example.com
+  username: !vault |
+    $ANSIBLE_VAULT;1.1;AES256
+    encrypted_username_here
+  password: !vault |
+    $ANSIBLE_VAULT;1.1;AES256
+    encrypted_password_here
+
+# Kubernetes secrets
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secrets
+type: Opaque
+data:
+  # Base64 encoded values
+  db-password: cGFzc3dvcmQ=
+  api-key: YWJjZGVmZ2hpams=
+
+# Don't put secrets in plain text
+# Bad example (don't do this):
+# api_key: "super-secret-key-123"
+
+
+# Performance Optimization
+
+# Use anchors to avoid repetition
+default_resources: &default_resources
+  memory: 256Mi
+  cpu: 100m
+
+# Efficient structure
+services:
+  api:
+    <<: *default_resources
+    name: api-service
+    replicas: 3
+    
+  worker:
+    <<: *default_resources
+    name: worker-service
+    replicas: 2
+    memory: 512Mi  # Override when needed

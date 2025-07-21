@@ -1,0 +1,176 @@
+1. Local Storage (Default)
+```yaml
+volumes:
+  local_data:
+    driver: local
+```
+- Use Case: Basic persistence for single-host deployments
+- Pros: Fast, no configuration needed
+- Cons: No multi-host access
+- Best For: Development, single-node databases
+
+---
+
+2. CIFS/SMB (Azure Files, Windows Shares)
+```yaml
+volumes:
+  azure_share:
+    driver_opts:
+      type: cifs
+      o: username=azureuser,password=xxx,vers=3.0
+      device: "//storage-account.file.core.windows.net/share"
+```
+- Use Case: Cloud/Windows file sharing
+- Protocol: SMB 3.0 (encrypted)
+- Best For: 
+  - Azure cloud deployments
+  - Windows-based applications
+  - Cross-platform file sharing
+
+---
+
+3. NFS (AWS EFS, Self-Hosted)
+```yaml
+volumes:
+  nfs_volume:
+    driver_opts:
+      type: nfs
+      o: addr=fs-123456.efs.us-east-1.amazonaws.com,rw,nolock
+      device: ":/persistent_data"
+```
+- Use Case: High-performance shared storage
+- Protocol: NFSv4
+- Best For:
+  - Kubernetes clusters
+  - Media processing pipelines
+  - Multi-container read-heavy workloads
+
+---
+
+4. tmpfs (RAM Disk)
+```yaml
+volumes:
+  temp_cache:
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: size=1G,uid=1000
+```
+- Use Case: Non-persistent temporary files
+- Pros: RAM-speed access
+- Cons: Volatile storage
+- Best For: 
+  - Session caches
+  - Temporary processing
+  - Security-sensitive data
+
+---
+
+5. AWS EBS/EFS
+```yaml
+# For EBS (block storage)
+volumes:
+  ebs_volume:
+    driver: local
+    driver_opts:
+      type: ext4
+      device: "/dev/xvdf"
+
+# For EFS (file storage)
+volumes:
+  efs_volume:
+    driver_opts:
+      type: efs
+      device: "fs-123456.efs.us-east-1.amazonaws.com"
+```
+- Use Case: AWS-native persistent storage
+- EBS Best For: Databases (high IOPS)
+- EFS Best For: Shared logs, ML datasets
+
+---
+
+ 6. Google Cloud Filestore
+```yaml
+volumes:
+  gcp_filestore:
+    driver_opts:
+      type: nfs
+      o: addr=10.0.0.2,rw
+      device: ":/vol1"
+```
+- Use Case: GCP-hosted NFS
+- Best For: 
+  - GKE persistent volumes
+  - AI/ML training data
+  - Media rendering farms
+
+---
+
+ 7. SSHFS (Remote Mount)
+```yaml
+volumes:
+  remote_data:
+    driver_opts:
+      type: sshfs
+      o: sshcmd=user@remote:/path,password=xxx
+```
+- Use Case: Secure remote storage
+- Best For:
+  - Hybrid cloud setups
+  - Legacy system integration
+  - Secure file transfers
+
+---
+
+ 8. Portworx (Cloud-Native Storage)
+```yaml
+volumes:
+  px_volume:
+    driver: pxd
+    driver_opts:
+      repl: "3"
+      secure: "true"
+```
+- Use Case: Kubernetes-native storage
+- Features:
+  - Snapshots
+  - Encryption
+  - Cross-cloud replication
+- Best For: Stateful containers in production
+
+---
+
+ Protocol Comparison Table
+
+| Protocol  | Speed    | Multi-Host | Encryption | Best Use Case |
+|---------- |-------   |------------|------------|---------------|
+| Local     | ★★★★★ | No          | No         | Single-node DBs |
+| CIFS      | ★★☆☆☆ | Yes         | SMB 3.0+   | Windows/Azure |
+| NFS       | ★★★★☆ | Yes         | Kerberos   | Linux clusters |
+| EFS       | ★★★☆☆ | Yes         | TLS        | AWS workloads |
+| tmpfs     | ★★★★★ | No          | No         | Temporary files |
+
+---
+
+ Key Recommendations
+1. Cloud Deployments:
+   - AWS: Use EFS for shared, EBS for dedicated
+   - Azure: Azure Files (SMB 3.1.1)
+   - GCP: Filestore (NFS)
+
+2. Security:
+   ```yaml
+   o: vers=3.1.1,sec=ntlmssp,credentials=/run/secrets/smb_creds
+   ```
+
+3. Performance Tuning:
+   ```yaml
+   # NFS optimizations
+   o: rw,async,noatime,nodiratime
+   ```
+
+4. Backup Strategy:
+   ```bash
+   # For CIFS/NFS volumes
+   docker run --rm -v azure_share:/data alpine tar czf backup.tar.gz -C /data .
+   ```

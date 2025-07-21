@@ -1,0 +1,56 @@
+# JSON Schema for validation
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "name": {"type": "string"},
+    "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+    "port": {"type": "integer", "minimum": 1, "maximum": 65535}
+  },
+  "required": ["name", "version"]
+}
+
+# Corresponding YAML
+name: my-app
+version: "1.0.0"
+port: 8080
+
+# # Validate YAML syntax
+# python -c "import yaml; yaml.safe_load(open('config.yaml'))"
+# # Using yamllint
+# yamllint config.yaml
+# # Using yq for processing
+# yq '.services[] | select(.name == "api") | .port' docker-compose.yml
+
+
+
+# Essential Tools
+# ----------------------------------------------------------------
+# YAML processors
+# yq - Command-line YAML processor
+# jq - JSON processor (works with YAML via yq)
+# yamllint - YAML linter
+# yaml-validate - YAML validator
+
+# IDE/Editor plugins
+# VS Code: YAML extension
+# Vim: vim-yaml
+# Emacs: yaml-mode
+
+
+# Conversion Tools
+# ---------------------------------------------------------------
+# # Convert between formats
+# yq -o json config.yaml > config.json  # YAML to JSON
+# yq -P config.json > config.yaml       # JSON to YAML
+
+
+
+# # Validate YAML syntax
+# python -c "import yaml; print(yaml.safe_load(open('file.yaml')))"
+
+# # Check structure
+# yq '.' file.yaml
+
+# # Pretty print
+# yq -P file.yaml

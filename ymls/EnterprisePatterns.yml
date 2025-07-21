@@ -1,0 +1,21 @@
+# Multi-environment configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: {{ .Values.namespace }}
+data:
+  config.yaml: |
+    logging:
+      level: {{ .Values.logging.level }}
+      format: json
+    
+    database:
+      host: {{ .Values.database.host }}
+      port: {{ .Values.database.port }}
+      ssl: {{ .Values.database.ssl }}
+    
+    features:
+      {{- range .Values.features }}
+      {{ .name }}: {{ .enabled }}
+      {{- end }}

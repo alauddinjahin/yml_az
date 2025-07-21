@@ -1,0 +1,21 @@
+# Environment-specific configs
+defaults: &defaults
+  timeout: 30
+  retries: 3
+  log_level: info
+
+environments:
+  development:
+    <<: *defaults
+    debug: true
+    log_level: debug
+    
+  staging:
+    <<: *defaults
+    timeout: 60
+    
+  production:
+    <<: *defaults
+    timeout: 120
+    retries: 5
+    log_level: warn

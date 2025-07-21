@@ -1,0 +1,139 @@
+# docker compose file 
+version: '3.8'
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: production
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=database
+    depends_on:
+      - database
+    volumes:
+      - ./app:/app
+      - node_modules:/app/node_modules
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  database:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: myapp
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  node_modules:
+
+networks:
+  app-network:      #Isolates services from other containers # Better security than default bridge # All services join same network
+    driver: bridge
+
+
+# type of volumnes:
+# - Named Volumes (Persistent Data)
+# - Host-Bound Volumes (Development Sync)
+
+
+# - Anonymous Volume 
+# Identification:
+# Only container path specified (no : or host path)
+# Auto-generated name (hash ID)
+# Temporary persistence 
+# e, g: - /app/node_modules 
+
+
+# Quick Identification Table
+# Type	                  Example Syntax	          Top-Level Definition	       Host Path Visible	       Typical Use
+# Named	                  db_data:/var/lib/data	      Yes (volumes: db_data:)	        No	                  Databases, persistent storage
+# Host-Bound	            ./src:/app/src	            No	                            Yes	                  Code sync, config files
+# Anonymous	              /var/log	                  No	                            No	                  Temporary data (rarely used intentionally)
+
+
+
+# Rules: "5432:5432"
+# Left side: Host machine port
+# Right side: Container port
+
+
+# Key Volume Use Cases in Your File
+# -----------------------------------------------------------------------------------------------------------
+# Service	              Volume            Type	                            Purpose	Path
+# web	Host-bound        (./app)	          Code synchronization	          Local ↔ Container sync
+# web	Named             (node_modules)	  Dependency isolation	          Prevents host OS conflicts
+# database	Named       (postgres_data)	  Persistent database storage	    PostgreSQL data directory
+# database	Host-bound  (init.sql)	      Initialization script	          Runs on first DB startup
+# redis	Named           (redis_data)	    Persistent cache storage	      Redis data directory
+
+
+
+# Network Drivers Comparison
+# # -----------------------------------------------------------------------------------------------------
+# Driver	      Use Case	                      Performance	              DNS Resolution	            Isolation
+# bridge	      Default for single-host apps	    Good	                        Yes	                  Medium
+# host	        Maximum performance	              Best	                        No	                    None
+# overlay	      Multi-host (Swarm)	              Moderate	                    Yes	                    High
+# none	        No networking	                    N/A	                          No	                  Complete
+
+
+# For production:
+
+# services:
+#   db:
+#     volumes:
+#       - db_data:/var/lib/postgresql/data  # Named (persistent storage)
+      
+# volumes:
+#   db_data:
+#     driver_opts:
+#       type: nfs
+#       o: addr=nfs-server.example.com,rw
+
+
+# For Development:
+
+# services:
+#   web:
+#     volumes:
+#       - ./src:/app/src              # Host-bound (code sync)
+#       - node_modules:/app/node_modules # Named (dependency isolation)
+
+# Advance
+# volumes:
+#   db_data:
+#     driver: local
+#     driver_opts:
+#       type: 'nfs'          # Network storage
+#       o: 'addr=nfs.example.com,rw'
+#     labels:
+#       backup: "daily"      # For volume management
+

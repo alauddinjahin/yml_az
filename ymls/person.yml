@@ -62,3 +62,29 @@ person:
         role: accountant
 
 
+# Complex data transformations
+# data_pipeline:
+#   stages:
+#     - name: extract
+#       type: database
+#       config: &db_config
+#         host: localhost
+#         port: 5432
+        
+#     - name: transform
+#       type: processor
+#       config:
+#         rules:
+#           - field: date
+#             type: timestamp
+#           - field: amount
+#             type: currency
+            
+#     - name: load
+#       type: warehouse
+#       config:
+#         <<: *db_config
+#         port: 5433
+#         table: analytics
+
+

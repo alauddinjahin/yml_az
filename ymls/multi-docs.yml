@@ -11,19 +11,30 @@ data:
     debug: true
     port: 8080
 
+---  # Document separator (only one needed between documents)
+
 # Second document
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: app-deployment
-# spec:
-#   replicas: 3
-#   template:
-#     spec:
-#       containers:
-#       - name: app
-#         image: myapp:latest
-#         ports:
-#         - containerPort: 8080
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+spec:
+  replicas: 3 #Maintains 3 identical pods
+  template: #Blueprint for pods
+    spec:
+      containers:
+      - name: app
+        image: myapp:latest
+        ports:
+        - containerPort: 8080
 
 # End of documents (optional)
+# kubectl apply -f multi-doc-file.yaml
+
+# How Kubernetes Processes This:
+# First creates the ConfigMap with configuration data
+# Then creates the Deployment which:
+# Launches 3 pods
+# Each pod runs myapp:latest container
+# Exposes port 8080
+# Can access the ConfigMap data

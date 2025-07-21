@@ -26,7 +26,8 @@ const YAML = require('yaml');
 
 try {
   const fileContents = fs.readFileSync('ymls/multi-docs.yml', 'utf8');
-  const data = YAML.parse(fileContents);
+  const data = YAML.parseAllDocuments(fileContents); // if you use multi docs in a single file
+  // const data = YAML.parse(fileContents);
   
   console.log('YAML is valid!');
   console.log(data);
